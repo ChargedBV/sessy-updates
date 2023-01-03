@@ -1,0 +1,42 @@
+name: Make new multi-release
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    name: Publish new release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get current date
+        id: date
+        run: |
+          echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
+          echo "pretty_date=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
+      - name: Get versions
+        id: versions
+        run: |
+          echo "dongle_prod=$(head -1 production/dongle_version.txt)" >> $GITHUB_OUTPUT
+          echo "ac_board_prod=$(head -1 production/ac_board_version.txt)" >> $GITHUB_OUTPUT
+          echo "p1_meter_prod=$(head -1 production/p1_meter_version.txt)" >> $GITHUB_OUTPUT
+          echo "dongle_staging=$(head -1 staging/dongle_version.txt)" >> $GITHUB_OUTPUT
+          echo "ac_board_staging=$(head -1 staging/ac_board_version.txt)" >> $GITHUB_OUTPUT
+          echo "p1_meter_staging=$(head -1 staging/p1_meter_version.txt)" >> $GITHUB_OUTPUT
+      - name: Publish new release
+        run: |
+          mkdir -p tmp
+          cp production/*.bin tmp
+          cp staging/dongle_firmware.bin tmp/dongle_staging.bin
+          cp staging/ac_board_firmware.bin tmp/ac_board_staging.bin
+          cp staging/p1_meter_firmware.bin tmp/p1_meter_staging.bin
+          
+          cd tmp
+          gh release create ${{ steps.date.outputs.date }} \
+          -t "Release ${{ steps.date.outputs.pretty_date }}" \
+          -n "This release contains the following files:<br/><br/>dongle_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.dongle_prod }}<br/>ac_board_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ac_board_prod }}<br/>p1_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.p1_meter_prod }}<br/><br/>dongle_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.dongle_staging }}<br/>ac_board_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ac_board_staging }}<br/>p1_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.p1_meter_staging }}" \
+          dongle_firmware.bin ac_board_firmware.bin p1_meter_firmware.bin dongle_staging.bin ac_board_staging.bin p1_meter_staging.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,22 @@
+name: "Danger Zone: promote latest staged fw to production"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    name: Publish new release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Overwrite production artifacts
+        run: |
+          cp staging/* production/
+      - name: Commit changes
+        run: |
+          git config --global user.email "info@sessy.nl"
+          git config --global user.name "Sessy CI"
+          git add production/*
+          git commit -m "New production release"
+          git push
