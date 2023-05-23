@@ -23,9 +23,11 @@ jobs:
           echo "dongle_prod=$(head -1 production/dongle_version.txt)" >> $GITHUB_OUTPUT
           echo "ac_board_prod=$(head -1 production/ac_board_version.txt)" >> $GITHUB_OUTPUT
           echo "p1_meter_prod=$(head -1 production/p1_meter_version.txt)" >> $GITHUB_OUTPUT
+          echo "ct_meter_prod=$(head -1 production/ct_meter_version.txt)" >> $GITHUB_OUTPUT
           echo "dongle_staging=$(head -1 staging/dongle_version.txt)" >> $GITHUB_OUTPUT
           echo "ac_board_staging=$(head -1 staging/ac_board_version.txt)" >> $GITHUB_OUTPUT
           echo "p1_meter_staging=$(head -1 staging/p1_meter_version.txt)" >> $GITHUB_OUTPUT
+          echo "ct_meter_staging=$(head -1 staging/ct_meter_version.txt)" >> $GITHUB_OUTPUT
       - name: Publish new release
         run: |
           mkdir -p tmp
@@ -33,11 +35,27 @@ jobs:
           cp staging/dongle_firmware.bin tmp/dongle_staging.bin
           cp staging/ac_board_firmware.bin tmp/ac_board_staging.bin
           cp staging/p1_meter_firmware.bin tmp/p1_meter_staging.bin
+          cp staging/ct_meter_firmware.bin tmp/ct_meter_staging.bin
           
+          RELEASE_NOTE=$(cat << EOF 
+This release contains the following files:<br/>
+<br/>
+dongle_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.dongle_prod }}<br/>
+ac_board_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ac_board_prod }}<br/>
+p1_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.p1_meter_prod }}<br/>
+ct_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ct_meter_prod }}<br/>
+<br/>
+dongle_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.dongle_staging }}<br/>
+ac_board_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ac_board_staging }}<br/>
+p1_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.p1_meter_staging }}<br/>
+ct_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ct_meter_staging }}<br/>
+EOF
+
           cd tmp
           gh release create ${{ steps.date.outputs.date }} \
           -t "Release ${{ steps.date.outputs.pretty_date }}" \
-          -n "This release contains the following files:<br/><br/>dongle_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.dongle_prod }}<br/>ac_board_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ac_board_prod }}<br/>p1_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.p1_meter_prod }}<br/><br/>dongle_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.dongle_staging }}<br/>ac_board_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ac_board_staging }}<br/>p1_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.p1_meter_staging }}" \
-          dongle_firmware.bin ac_board_firmware.bin p1_meter_firmware.bin dongle_staging.bin ac_board_staging.bin p1_meter_staging.bin
+          -n  "${{ RELEASE_NOTE }}" \
+          dongle_firmware.bin ac_board_firmware.bin p1_meter_firmware.bin ct_meter_firmware.bin \
+          dongle_staging.bin ac_board_staging.bin p1_meter_staging.bin ct_meter_staging.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
