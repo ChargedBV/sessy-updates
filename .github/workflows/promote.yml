@@ -20,3 +20,8 @@ jobs:
           git add production/*
           git commit -m "New production release"
           git push
+
+  release:
+    name: Publish new release
+    uses: ChargedBV/sessy-updates/.github/workflows/release.yml@main
+    needs: tag
