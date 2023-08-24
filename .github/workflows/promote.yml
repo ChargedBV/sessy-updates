@@ -9,7 +9,10 @@ jobs:
     name: Publish new release
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - name: Compare releases
+        # we check for dongle firmware, as this is considered the leading version
+        run: if cmp -s "staging/dongle_version.txt" "production/dongle_version.txt"; then exit 1; fi
       - name: Overwrite production artifacts
         run: |
           cp staging/* production/
@@ -25,3 +28,9 @@ jobs:
     name: Publish new release
     uses: ChargedBV/sessy-updates/.github/workflows/release.yml@main
     needs: tag
+
+  cloud:
+    name: Push new release to cloud
+    uses: ChargedBV/sessy-updates/.github/workflows/cloud.yml@main
+    needs: tag
+    secrets: inherit

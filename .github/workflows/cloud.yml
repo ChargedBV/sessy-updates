@@ -1,0 +1,30 @@
+name: Push production release to the cloud
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    name: Push new release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # grr, why does checkout code not get latest commit?!?
+      - name: angry pull
+        run: git pull
+      - name: Prepare production bins for cloud
+        run: |
+          mkdir -p cloud_release
+          cp production/*.bin cloud_release
+          cp production/dongle_version.txt cloud_release/version.txt
+          cat cloud_release/version.txt
+          cd cloud_release
+          zip ../cloud_firmware.zip *
+          cd ..
+      - name: Push to cloud
+        run: |
+          curl -i -X POST https://sessy-ota-test.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_TEST_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
+          curl -i -X POST https://sessy-ota-acc.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_ACC_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
+          curl -i -X POST https://sessy-ota.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_PROD_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
