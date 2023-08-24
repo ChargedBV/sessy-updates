@@ -12,7 +12,10 @@ jobs:
     name: Publish new release
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      # grr, why does checkout code not get latest commit?!?
+      - name: angry pull
+        run: git pull
       - name: Get current date
         id: date
         run: |
@@ -37,7 +40,7 @@ jobs:
           cp staging/ac_board_firmware.bin tmp/ac_board_staging.bin
           cp staging/p1_meter_firmware.bin tmp/p1_meter_staging.bin
           cp staging/ct_meter_firmware.bin tmp/ct_meter_staging.bin
-          
+
           RN="This release contains the following files:<br/>"
           RN="$RN <br/>"
           RN="$RN dongle_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.dongle_prod }}<br/>"
