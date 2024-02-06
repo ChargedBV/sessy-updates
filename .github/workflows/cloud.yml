@@ -10,7 +10,7 @@ jobs:
     name: Push new release
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # grr, why does checkout code not get latest commit?!?
       - name: angry pull
         run: git pull

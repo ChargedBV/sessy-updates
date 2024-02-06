@@ -9,7 +9,7 @@ jobs:
     name: Publish new release
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Compare releases
         # we check for dongle firmware, as this is considered the leading version
         run: if cmp -s "staging/dongle_version.txt" "production/dongle_version.txt"; then exit 1; fi
