@@ -25,6 +25,6 @@ jobs:
           cd ..
       - name: Push to cloud
         run: |
-          curl -i -X POST https://sessy-ota-test.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_TEST_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
-          curl -i -X POST https://sessy-ota-acc.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_ACC_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
-          curl -i -X POST https://sessy-ota.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_PROD_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
+          curl -i -X POST https://charged-ota-test.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_TEST_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
+          curl -i -X POST https://charged-ota-acc.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_ACC_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
+          curl -i -X POST https://charged-ota-prod.azurewebsites.net/api/CreateRelease?code=${{ secrets.OTA_PROD_RELEASE_TOKEN }} --form file="@cloud_firmware.zip"
