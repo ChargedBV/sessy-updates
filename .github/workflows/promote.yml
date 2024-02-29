@@ -26,11 +26,11 @@ jobs:
 
   release:
     name: Publish new release
-    uses: ChargedBV/sessy-updates/.github/workflows/release.yml@main
+    uses: ChargedBV/tmp/.github/workflows/release.yml@main
     needs: tag
 
   cloud:
     name: Push new release to cloud
-    uses: ChargedBV/sessy-updates/.github/workflows/cloud.yml@main
+    uses: ChargedBV/tmp/.github/workflows/cloud.yml@main
     needs: tag
     secrets: inherit

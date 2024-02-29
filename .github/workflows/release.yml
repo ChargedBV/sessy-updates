@@ -28,10 +28,16 @@ jobs:
           echo "ac_board_prod=$(head -1 production/ac_board_version.txt)" >> $GITHUB_OUTPUT
           echo "p1_meter_prod=$(head -1 production/p1_meter_version.txt)" >> $GITHUB_OUTPUT
           echo "ct_meter_prod=$(head -1 production/ct_meter_version.txt)" >> $GITHUB_OUTPUT
+          echo "dongle_prod_factory=$(head -1 production/dongle_factory_version.txt)" >> $GITHUB_OUTPUT
+          echo "p1_meter_prod_factory=$(head -1 production/p1_meter_factory_version.txt)" >> $GITHUB_OUTPUT
+          echo "ct_meter_prod_factory=$(head -1 production/ct_meter_factory_version.txt)" >> $GITHUB_OUTPUT
           echo "dongle_staging=$(head -1 staging/dongle_version.txt)" >> $GITHUB_OUTPUT
           echo "ac_board_staging=$(head -1 staging/ac_board_version.txt)" >> $GITHUB_OUTPUT
           echo "p1_meter_staging=$(head -1 staging/p1_meter_version.txt)" >> $GITHUB_OUTPUT
           echo "ct_meter_staging=$(head -1 staging/ct_meter_version.txt)" >> $GITHUB_OUTPUT
+          echo "dongle_staging_factory=$(head -1 staging/dongle_factory_version.txt)" >> $GITHUB_OUTPUT
+          echo "p1_meter_staging_factory=$(head -1 staging/p1_meter_factory_version.txt)" >> $GITHUB_OUTPUT
+          echo "ct_meter_staging_factory=$(head -1 staging/ct_meter_factory_version.txt)" >> $GITHUB_OUTPUT
       - name: Publish new release
         run: |
           mkdir -p tmp
@@ -40,6 +46,9 @@ jobs:
           cp staging/ac_board_firmware.bin tmp/ac_board_staging.bin
           cp staging/p1_meter_firmware.bin tmp/p1_meter_staging.bin
           cp staging/ct_meter_firmware.bin tmp/ct_meter_staging.bin
+          cp staging/dongle_factory.bin tmp/dongle_staging_factory.bin
+          cp staging/p1_meter_factory.bin tmp/p1_meter_staging_factory.bin
+          cp staging/ct_meter_factory.bin tmp/ct_meter_staging_factory.bin
 
           RN="This release contains the following files:<br/>"
           RN="$RN <br/>"
@@ -47,17 +56,25 @@ jobs:
           RN="$RN ac_board_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ac_board_prod }}<br/>"
           RN="$RN p1_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.p1_meter_prod }}<br/>"
           RN="$RN ct_meter_firmware.bin -> latest production firmware @v${{ steps.versions.outputs.ct_meter_prod }}<br/>"
+          RN="$RN dongle_factory.bin -> latest production firmware @v${{ steps.versions.outputs.dongle_prod_factory }}<br/>"
+          RN="$RN p1_meter_factory.bin -> latest production firmware @v${{ steps.versions.outputs.p1_meter_prod_factory }}<br/>"
+          RN="$RN ct_meter_factory.bin -> latest production firmware @v${{ steps.versions.outputs.ct_meter_prod_factory }}<br/>"
           RN="$RN <br/>"
           RN="$RN dongle_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.dongle_staging }}<br/>"
           RN="$RN ac_board_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ac_board_staging }}<br/>"
           RN="$RN p1_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.p1_meter_staging }}<br/>"
           RN="$RN ct_meter_staging.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ct_meter_staging }}<br/>"
+          RN="$RN dongle_staging_factory.bin -> latest pre-release firmware @v${{ steps.versions.outputs.dongle_staging_factory }}<br/>"
+          RN="$RN p1_meter_staging_factory.bin -> latest pre-release firmware @v${{ steps.versions.outputs.p1_meter_staging_factory }}<br/>"
+          RN="$RN ct_meter_staging_factory.bin -> latest pre-release firmware @v${{ steps.versions.outputs.ct_meter_staging_factory }}<br/>"
 
           cd tmp
           gh release create ${{ steps.date.outputs.date }} \
           -t "Release ${{ steps.date.outputs.pretty_date }}" \
           -n  "$RN" \
           dongle_firmware.bin ac_board_firmware.bin p1_meter_firmware.bin ct_meter_firmware.bin \
-          dongle_staging.bin ac_board_staging.bin p1_meter_staging.bin ct_meter_staging.bin
+          dongle_factory.bin p1_meter_factory.bin ct_meter_factory.bin \
+          dongle_staging.bin ac_board_staging.bin p1_meter_staging.bin ct_meter_staging.bin \
+          dongle_staging_factory.bin p1_meter_staging_factory.bin ct_meter_staging_factory.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
